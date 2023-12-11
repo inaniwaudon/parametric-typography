@@ -1,25 +1,17 @@
 import fs from "fs";
 
-type Command =
+type TempCommand =
   | {
-      command: "M" | "m" | "L";
+      command: "M" | "m";
       x: number;
       y: number;
     }
   | {
-      command: "h";
-      x: number;
-    }
-  | {
-      command: "v";
-      y: number;
-    }
-  | {
-      command: "c";
-      x0: number;
-      y0: number;
+      command: "c" | "C";
       x1: number;
       y1: number;
+      x2: number;
+      y2: number;
       x: number;
       y: number;
     };
@@ -58,47 +50,35 @@ const parseValues = (input: string) => {
 export const convert = (txt: string) => {
   const file = fs.readFileSync(txt, "utf8");
   const lines = file.split("\n");
-  const lineCommands: Command[][] = [];
+  const tempCommands: TempCommand[][] = [];
 
   for (const line of lines) {
-    const commands: Command[] = [];
+    const commands: TempCommand[] = [];
 
     for (let i = 0; i < line.length; i++) {
       const command = line[i];
 
       const after = line.substring(i + 1);
-      const toResult = after.search(/[MmLchv]/);
+      const toResult = after.search(/[MmCc]/);
       const to = toResult > -1 ? toResult : after.length;
       const value = after.substring(0, to);
       const values = parseValues(value);
 
-      if (command === "M" || command === "m" || command === "L") {
+      if (command === "M" || command === "m") {
         commands.push({
           command,
           x: values[0],
           y: values[1],
         });
       }
-      if (command === "h") {
-        commands.push({
-          command,
-          x: values[0],
-        });
-      }
-      if (command === "v") {
-        commands.push({
-          command,
-          y: values[0],
-        });
-      }
-      if (command === "c") {
+      if (command === "c" || command === "C") {
         for (let i = 0; i < values.length / 6; i++) {
           commands.push({
             command,
-            x0: values[i * 6 + 0],
-            y0: values[i * 6 + 1],
-            x1: values[i * 6 + 2],
-            y1: values[i * 6 + 3],
+            x1: values[i * 6 + 0],
+            y1: values[i * 6 + 1],
+            x2: values[i * 6 + 2],
+            y2: values[i * 6 + 3],
             x: values[i * 6 + 4],
             y: values[i * 6 + 5],
           });
@@ -106,20 +86,21 @@ export const convert = (txt: string) => {
       }
       i += to;
     }
-
     if (commands.length > 0) {
-      lineCommands.push(commands);
+      tempCommands.push(commands);
     }
   }
 
   // 相対位置 → 絶対位置に変換
-  for (const commands of lineCommands) {
+  for (const commands of tempCommands) {
     let beforeX = 0;
     let beforeY = 0;
 
     for (const command of commands) {
-      const isAbsolute = command.command === "M" || command.command === "L";
+      const isAbsolute = command.command === "M" || command.command === "C";
       if (isAbsolute) {
+        beforeX = command.x;
+        beforeY = command.y;
         continue;
       }
       if ("x" in command) {
@@ -128,17 +109,17 @@ export const convert = (txt: string) => {
       if ("y" in command) {
         command.y += beforeY;
       }
-      if ("x0" in command) {
-        command.x0 += beforeX;
-      }
-      if ("y0" in command) {
-        command.y0 += beforeY;
-      }
       if ("x1" in command) {
         command.x1 += beforeX;
       }
       if ("y1" in command) {
         command.y1 += beforeY;
+      }
+      if ("x2" in command) {
+        command.x2 += beforeX;
+      }
+      if ("y2" in command) {
+        command.y2 += beforeY;
       }
 
       if ("x" in command) {
@@ -156,22 +137,18 @@ export const convert = (txt: string) => {
   let maxX = 0;
   let maxY = 0;
 
-  for (const commands of lineCommands) {
+  for (const commands of tempCommands) {
     for (const command of commands) {
-      if (command.command === "c") {
-        minX = Math.min(minX, command.x, command.x0, command.x1);
-        minY = Math.min(minY, command.y, command.y0, command.y1);
-        maxX = Math.max(maxX, command.x, command.x0, command.x1);
-        maxY = Math.max(maxY, command.y, command.y0, command.y1);
+      if (command.command === "c" || command.command === "C") {
+        minX = Math.min(minX, command.x, command.x1, command.x2);
+        minY = Math.min(minY, command.y, command.y1, command.y2);
+        maxX = Math.max(maxX, command.x, command.x1, command.x2);
+        maxY = Math.max(maxY, command.y, command.y1, command.y2);
       } else {
-        if (command.command !== "h") {
-          minY = Math.min(minY, command.y);
-          maxY = Math.max(maxY, command.y);
-        }
-        if (command.command !== "v") {
-          minX = Math.min(minX, command.x);
-          maxX = Math.max(maxX, command.x);
-        }
+        minX = Math.min(minX, command.x);
+        maxX = Math.max(maxX, command.x);
+        minY = Math.min(minY, command.y);
+        maxY = Math.max(maxY, command.y);
       }
     }
   }
@@ -179,24 +156,22 @@ export const convert = (txt: string) => {
   const normalizeX = (x: number) => (x - minX) / (maxX - minX);
   const normalizeY = (y: number) => (y - minY) / (maxY - minY);
 
-  for (const commands of lineCommands) {
+  for (const commands of tempCommands) {
     for (const command of commands) {
-      if (command.command !== "v") {
-        command.x = normalizeX(command.x);
-      }
-      if (command.command !== "h") {
-        command.y = normalizeY(command.y);
-      }
-      if (command.command === "c") {
-        command.x0 = normalizeX(command.x0);
-        command.y0 = normalizeY(command.y0);
+      command.command = command.command.toUpperCase() as "M" | "C";
+
+      command.x = normalizeX(command.x);
+      command.y = normalizeY(command.y);
+      if (command.command === "C") {
         command.x1 = normalizeX(command.x1);
         command.y1 = normalizeY(command.y1);
+        command.x2 = normalizeX(command.x2);
+        command.y2 = normalizeY(command.y2);
       }
     }
   }
 
-  console.log(lineCommands);
+  console.log(tempCommands);
 };
 
 convert(process.argv[2]);
