@@ -22,3 +22,6 @@ export const calculateMovingAverage = (
     z: totalZ / newArray.length,
   };
 };
+
+export const withinRange = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);

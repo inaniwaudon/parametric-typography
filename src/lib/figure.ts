@@ -234,7 +234,6 @@ const getParallelArc = (arc: Arc, d0: number, d1: number): Arc => {
     }
     return p;
   };
-  console.log(d0, d1);
   const tempP1 = move({ ...arc.p1 }, d0);
   const tempP2 = move({ ...arc.p2 }, d1);
   const handleLine = getLine(tempP1, tempP2);

@@ -1,4 +1,4 @@
-import { InputCommand } from "./lib/figure";
+import { InputCommand } from "./figure";
 
 export const lineCommands: InputCommand[][] = [
   [

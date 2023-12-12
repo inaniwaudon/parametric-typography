@@ -1,10 +1,10 @@
 import styled from "@emotion/styled";
 
-import { lineCommands, lineCommands2, intonations } from "./commands";
-import { commandsToPathD, interpolate, strokeToPath } from "./lib/figure";
+import { lineCommands, lineCommands2, intonations } from "../lib/commands";
+import { commandsToPathD, interpolate, strokeToPath } from "../lib/figure";
 
 const Svg = styled.svg`
-  width: 60%;
+  width: 100%;
 `;
 
 interface DrawerProps {
