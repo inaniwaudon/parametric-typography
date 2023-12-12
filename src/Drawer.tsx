@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 
-import { lineCommands, lineCommands2 } from "./commands";
+import { lineCommands, lineCommands2, intonations } from "./commands";
 import { commandsToPathD, interpolate, strokeToPath } from "./lib/figure";
 
 const Svg = styled.svg`
@@ -18,8 +18,8 @@ const Drawer = ({ ratio0, ratio1, ratio2 }: DrawerProps) => {
     interpolate(commands, lineCommands2[i], ratio0)
   );
   const width = 0.1 * Math.max(1.0 - ratio1, 0);
-  const offseted = interpolated.map((commands) =>
-    strokeToPath(commands, width)
+  const offseted = interpolated.map((commands, i) =>
+    strokeToPath(commands, width, intonations[i], ratio2)
   );
   const dArray = commandsToPathD(offseted);
   const color = `hsl(${ratio2 * 360}deg, 70%, 40%)`;

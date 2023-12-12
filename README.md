@@ -12,3 +12,7 @@
 ```
 yarn run dev
 ```
+
+```
+yarn node --loader ts-node/esm convert.ts font/e.svg
+```

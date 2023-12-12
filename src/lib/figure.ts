@@ -210,27 +210,34 @@ export const splitArc = (arc: Arc, t: number): [Arc, Arc] => {
 };
 
 // Arc を distance 移動させた平行曲線を求める
-const getParallelArc = (arc: Arc, distance: number): Arc => {
+const getParallelArc = (arc: Arc, d0: number, d1: number): Arc => {
   // アンカーポイントの移動量を求める
   const n0 = getArcNormal(arc, 0);
   const n1 = getArcNormal(arc, 1);
-  const getDelta = (n: Point) => ({
-    x: Math.cos(Math.atan2(n.y, n.x)) * distance,
-    y: Math.sin(Math.atan2(n.y, n.x)) * -distance,
+  const getDelta = (n: Point, d: number) => ({
+    x: Math.cos(Math.atan2(n.y, n.x)) * d,
+    y: Math.sin(Math.atan2(n.y, n.x)) * -d,
   });
-  const fromDelta = getDelta(n0);
-  const toDelta = getDelta(n1);
+  const fromDelta = getDelta(n0, d0);
+  const toDelta = getDelta(n1, d1);
 
   // 移動前のハンドルを法線方向に d 移動させる
-  const handleLine = getLine(arc.p1, arc.p2);
-  if (handleLine.type === "vertical") {
-    handleLine.x += distance;
-  }
-  if (handleLine.type === "normal") {
-    const y = arc.p1.y > arc.p2.y ? -1 : 1;
-    const tan = Math.atan2((1 / handleLine.a) * y, 1);
-    handleLine.b += distance / -Math.sin(tan);
-  }
+  const move = (p: Point, d: number) => {
+    const line = getLine(arc.p1, arc.p2);
+    if (line.type === "vertical") {
+      //
+    }
+    if (line.type === "normal") {
+      const y = arc.p1.y > arc.p2.y ? -1 : 1;
+      const tan = Math.atan2((1 / line.a) * y, 1);
+      p.y += d / -Math.sin(tan);
+    }
+    return p;
+  };
+  console.log(d0, d1);
+  const tempP1 = move({ ...arc.p1 }, d0);
+  const tempP2 = move({ ...arc.p2 }, d1);
+  const handleLine = getLine(tempP1, tempP2);
 
   // 交点を求めて新たなハンドルとする
   const p0 = movePoint(arc.p0, fromDelta);
@@ -286,14 +293,40 @@ export const arcsToCommands = (arcs: Arc[]) => {
   return commands;
 };
 
-export const strokeToPath = (commands: InputCommand[], width: number) => {
+export const strokeToPath = (
+  commands: InputCommand[],
+  baseWidth: number,
+  widths: number[],
+  ratio: number
+) => {
   const arcs = commandsToArcs(commands);
-  const splitedArcs = arcs.flatMap((arc) => splitArc(arc, 0.5));
+  const splitedArcs = arcs.flatMap((arc) => arc); //splitArc(arc, 0.5));
   const outsideArcs: Arc[] = [];
   const insideArcs: Arc[] = [];
-  for (const arc of splitedArcs) {
-    outsideArcs.push(getParallelArc(arc, width / 2));
-    insideArcs.push(getParallelArc(arc, -width / 2));
+  for (let i = 0; i < splitedArcs.length; i++) {
+    const arc = splitedArcs[i];
+    if (splitedArcs.length + 1 !== widths.length) {
+      throw new Error(
+        `The length is different. ${splitedArcs.length} ${widths.length}`
+      );
+    }
+
+    const fromRatio = widths[i] * ratio + (1 - ratio);
+    const toRatio = widths[i + 1] * ratio + (1 - ratio);
+    outsideArcs.push(
+      getParallelArc(
+        arc,
+        (baseWidth / 2) * fromRatio,
+        (baseWidth / 2) * toRatio
+      )
+    );
+    insideArcs.push(
+      getParallelArc(
+        arc,
+        (-baseWidth / 2) * fromRatio,
+        (-baseWidth / 2) * toRatio
+      )
+    );
   }
 
   const newCommands: OutputCommand[] = [];
