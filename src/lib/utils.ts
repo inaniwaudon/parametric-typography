@@ -1,4 +1,4 @@
-export interface Pos {
+export interface Point3D {
   x: number;
   y: number;
   z: number;
@@ -8,8 +8,8 @@ const sum = (array: number[]) => array.reduce((prev, value) => prev + value, 0);
 
 // 移動平均を算出
 export const calculateMovingAverage = (
-  array: Pos[],
-  newValue: Pos,
+  array: Point3D[],
+  newValue: Point3D,
   windowSize: number
 ) => {
   const newArray = [...array, newValue].slice(-windowSize);

@@ -1,7 +1,8 @@
-import { useCallback, useRef, useState } from "react";
-import Drawer from "./Drawer";
-import { Pos, calculateMovingAverage } from "./lib/utils";
 import styled from "@emotion/styled";
+import { useCallback, useRef, useState } from "react";
+import { Point3D, calculateMovingAverage } from "./lib/utils";
+import Drawer from "./Drawer";
+import Navigation from "./Navigation";
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -19,7 +20,9 @@ const Wrapper = styled.div`
 const Overlay = styled.div<{ displays: boolean }>`
   width: 100vw;
   height: 100vh;
+  line-height: 2;
   font-size: 32px;
+  font-family: "Montserrat", sans-serif;
   background-color: rgba(255, 255, 255, 0.8);
   justify-content: center;
   align-items: center;
@@ -33,14 +36,27 @@ const Overlay = styled.div<{ displays: boolean }>`
 const windowSize = 10;
 
 const App = () => {
-  const [calculated, setCalculated] = useState<Pos[]>([]);
-  const [tapped, setTapped] = useState(false);
+  const [starts, setStarts] = useState(false);
+  const [supportsMotion, setSupportsMotion] = useState(false);
   const [stopped, setStopped] = useState(false);
-  const [smoothed, setSmoothed] = useState<Pos>({ x: 0, y: 0, z: 0 });
+
+  // 加速度センサ
+  const [calculated, setCalculated] = useState<Point3D[]>([]);
+  const [smoothed, setSmoothed] = useState<Point3D>({ x: 0, y: 0, z: 0 });
   const [gammaOrientation, setGammaOrientation] = useState(0);
+  const [alternativeRatio, setAlternativeRatio] = useState<Point3D>({
+    x: 0,
+    y: 0,
+    z: 0,
+  });
 
   const stoppedRef = useRef<boolean>();
   stoppedRef.current = stopped;
+
+  // 送信処理
+  const submit = useCallback(() => {
+    //
+  }, []);
 
   const onDeviceMotion = useCallback(
     (e: DeviceMotionEvent) => {
@@ -55,7 +71,7 @@ const App = () => {
       // スマホを振っている
       if (stoppedRef.current) {
         if (Math.max(Math.abs(x0), Math.abs(y0), Math.abs(z0)) > 8) {
-          alert("スマホを振っている");
+          submit();
         }
       } else {
         const tempSmoothed = calculateMovingAverage(
@@ -67,7 +83,7 @@ const App = () => {
         setCalculated([...calculated, tempSmoothed].slice(-windowSize));
       }
     },
-    [calculated]
+    [calculated, submit]
   );
 
   const onDeviceOrientation = useCallback((e: DeviceOrientationEvent) => {
@@ -80,10 +96,13 @@ const App = () => {
       (DeviceMotionEvent as any).requestPermission();
       window.addEventListener("devicemotion", onDeviceMotion, true);
       window.addEventListener("deviceorientation", onDeviceOrientation, true);
-    } else {
-      alert("非対応の端末です");
+      setSupportsMotion(true);
     }
-    setTapped(true);
+    // 非サポート環境ではナビゲーションを表示する
+    else {
+      setSupportsMotion(false);
+    }
+    setStarts(true);
   }, [onDeviceMotion, onDeviceOrientation]);
 
   // 一時的にタップしたらセンサの値を固定する
@@ -97,17 +116,28 @@ const App = () => {
     setStopped(false);
   };
 
-  const ratio0 = Math.round(((smoothed.x + 5) / 10) * 50) / 50;
-  const ratio1 = Math.round(((smoothed.y + 5) / 10) * 50) / 50;
-  const ratio2 = Math.round(((gammaOrientation + 80) / 160) * 50) / 50;
+  const ratio = supportsMotion
+    ? {
+        x: Math.round(((smoothed.x + 5) / 10) * 50) / 50,
+        y: Math.round(((smoothed.y + 5) / 10) * 50) / 50,
+        z: Math.round(((gammaOrientation + 80) / 160) * 50) / 50,
+      }
+    : alternativeRatio;
 
   return (
     <>
       <Wrapper onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-        <Drawer ratio0={ratio0} ratio1={ratio1} ratio2={ratio2} />
+        <Drawer ratio0={ratio.x} ratio1={ratio.y} ratio2={ratio.z} />
+        {!supportsMotion && (
+          <Navigation
+            alternativeRatio={alternativeRatio}
+            setAlternativeRatio={setAlternativeRatio}
+            submit={submit}
+          />
+        )}
       </Wrapper>
-      <Overlay displays={!tapped} onClick={onClick}>
-        Tap the screen!
+      <Overlay displays={!starts} onClick={onClick}>
+        Tap the screen
       </Overlay>
     </>
   );
