@@ -1,8 +1,8 @@
-import aCommands from "../commands/a.json";
-import doCommands from "../commands/do.json";
-import kaCommands from "../commands/ka.json";
-import nCommands from "../commands/n.json";
-import uCommands from "../commands/u.json";
+import aCommands from "../const/commands/a.json";
+import doCommands from "../const/commands/do.json";
+import kaCommands from "../const/commands/ka.json";
+import nCommands from "../const/commands/n.json";
+import uCommands from "../const/commands/u.json";
 import { InputCommand, interpolate, strokeToPath } from "./figure";
 import { intonations } from "./intonation";
 
@@ -27,7 +27,7 @@ export const typoToCommands = (char: Char, typo: Typo) => {
   const interpolated = charCommands[0].map((commands, i) =>
     interpolate(commands, charCommands[1][i], typo.ratio0)
   );
-  const width = 0.12 * Math.max(1.0 - typo.ratio1, 0);
+  const width = 0.12 * Math.max(1.0 - typo.ratio1, 0) + 0.01;
   return interpolated.map((commands, i) =>
     strokeToPath(commands, width, intonations[char][i], typo.ratio2)
   );

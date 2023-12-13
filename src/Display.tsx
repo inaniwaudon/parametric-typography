@@ -2,10 +2,11 @@ import styled from "@emotion/styled";
 import { onValue, ref } from "firebase/database";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { IoMdDownload } from "react-icons/io";
-import { MdSmartphone } from "react-icons/md";
+import { MdClose, MdSmartphone } from "react-icons/md";
 
 import Sample from "./components/Display/Sample";
 import Selection from "./components/Display/Selection";
+import { keyColor } from "./const/color";
 import { db } from "./lib/firebase";
 import { makeFont } from "./lib/opentype";
 import { Typo } from "./lib/typo";
@@ -13,28 +14,42 @@ import { displayDateTime } from "./lib/utils";
 
 const Wrapper = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: 100svh;
   line-height: 1.8;
   font-size: 20px;
   font-family: "Montserrat", sans-serif;
-  padding: 56px 80px;
+  padding: 0 80px 56px 80px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   position: relative;
   overflow: hidden;
+
+  @media (width < 600px) {
+    padding: 0 40px 32px 40px;
+  }
 `;
 
-const Navigation = styled.nav``;
+const Navigation = styled.nav`
+  text-shadow: 0 0 8px #fff, 0 0 16px #fff, 0 0 32px #fff;
+  padding: 56px 0 32px 0;
+  position: relative;
+  z-index: 1;
+
+  @media (width < 600px) {
+    padding: 32px 0 24px 0;
+  }
+`;
 
 const Title = styled.h3`
+  line-height: 1.4;
   font-size: 28px;
   margin: 0;
 `;
 
 const Link = styled.a`
-  color: #23ab99;
+  color: ${keyColor};
   text-decoration: none;
   transition: color 0.2s ease;
 
@@ -52,11 +67,23 @@ const LinkText = styled.div`
 
 const Text = styled.div`
   width: ${140 * 5 + 10}px;
+  text-shadow: 0 0 8px #fff, 0 0 16px #fff, 0 0 32px #fff;
+  position: relative;
+  z-index: 1;
 `;
 
 const Time = styled.time`
   letter-spacing: 2px;
   display: block;
+`;
+
+const Close = styled.div`
+  font-size: 24px;
+  cursor: pointer;
+
+  &:hover {
+    color: #999;
+  }
 `;
 
 export type FirebaseTypo = {
@@ -69,8 +96,6 @@ const Display = () => {
   const [selectedTypo, setSelectedTypo] = useState<string | null>(null);
   const typosRef = useRef<Record<string, FirebaseTypo>>({});
   typosRef.current = typos;
-
-  const sampleColor = "#666";
 
   const downloadFont = useCallback(() => {
     if (selectedTypo) {
@@ -99,7 +124,7 @@ const Display = () => {
     <Wrapper>
       <Navigation>
         <Title>parametric-typography</Title>
-        <Link href="/">
+        <Link href="/controller">
           <LinkText>
             <MdSmartphone />
             Make your typeface
@@ -114,7 +139,7 @@ const Display = () => {
       {selectedTypo && (
         <Text id="abstract">
           <Time>
-            <Sample typo={typos[selectedTypo]} color={sampleColor} />
+            <Sample typo={typos[selectedTypo]} />
             {displayDateTime(new Date(typos[selectedTypo].created_at))}
           </Time>
           <Link href="#" onClick={downloadFont}>
@@ -123,6 +148,9 @@ const Display = () => {
               <div>Download this font</div>
             </LinkText>
           </Link>
+          <Close>
+            <MdClose onClick={() => setSelectedTypo(null)} />
+          </Close>
         </Text>
       )}
     </Wrapper>

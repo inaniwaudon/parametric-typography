@@ -179,6 +179,7 @@ export const strokeToPath = (
   widths: number[],
   ratio: number
 ): OutputCommand[] => {
+  console.log("!");
   const arcs = commandsToArcs(commands);
   const outsideArcs: Arc[] = [];
   const insideArcs: Arc[] = [];
@@ -195,7 +196,6 @@ export const strokeToPath = (
     outsideArcs.push(...offsetArc(arc, fromWidth, toWidth, true));
     insideArcs.push(...offsetArc(arc, fromWidth, toWidth, false));
   }
-  console.log(outsideArcs.length, insideArcs.length);
 
   const newCommands: OutputCommand[] = [];
   for (let i = 0; i < outsideArcs.length; i++) {

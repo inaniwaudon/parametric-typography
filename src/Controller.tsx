@@ -6,13 +6,14 @@ import Navigation from "./components/Controller/Navigation";
 import { useRatio } from "./lib/useRatio";
 
 const Wrapper = styled.div`
-  width: 100vw;
-  height: 100vh;
+  width: 100dvw;
+  height: 100dvh;
   user-select: none;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
   position: fixed;
   top: 0;
   left: 0;
@@ -20,6 +21,9 @@ const Wrapper = styled.div`
 
 const DrawerWrapper = styled.div<{ ratio: number }>`
   width: 60%;
+  max-height: 60%;
+  display: flex;
+  justify-content: center;
   opacity: ${({ ratio }) => 1.0 - ratio};
   filter: blur(${({ ratio }) => ratio * 20}px);
   transform: scale(${({ ratio }) => 1.0 + ratio * 3});
@@ -45,16 +49,11 @@ const Controller = () => {
   const [starts, setStarts] = useState(false);
   const [distance, setDistance] = useState(0);
 
-  const onSubmit = (x: number, y: number, z: number) => {
-    x;
-    y;
-    z;
-
+  const onSubmit = () => {
     const easeInQuad = (x: number) => x * x;
 
     const loop = (x: number) => {
       const newValue = easeInQuad(x + 0.05);
-      console.log(x + 0.1, newValue);
       setDistance(newValue);
       if (x + 0.1 < 1) {
         setTimeout(() => loop(x + 0.1), 20);
@@ -112,7 +111,7 @@ const Controller = () => {
             setAlternativeRatio={setAlternativeRatio}
             submit={() => {
               submit();
-              onSubmit(0, 0, 0);
+              onSubmit();
             }}
           />
         )}

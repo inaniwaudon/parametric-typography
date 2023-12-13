@@ -1216,11 +1216,6 @@ bezier-js@^6.1.4:
   resolved "https://registry.yarnpkg.com/bezier-js/-/bezier-js-6.1.4.tgz#c7828f6c8900562b69d5040afb881bcbdad82001"
   integrity sha512-PA0FW9ZpcHbojUCMu28z9Vg/fNkwTj5YhusSAjHHDfHDGLxJ6YUKrAN2vk1fP2MMOxVw4Oko16FMlRGVBGqLKg==
 
-bezierjs@^0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/bezierjs/-/bezierjs-0.0.4.tgz#396cebdcdf11ef1087c878d1b2e310df1a05acd6"
-  integrity sha512-jcERDgm4Hhhyr4J9DcReItHK0iRSDnZQuUnKnqlCqB3pkFhPo7JsV/pHzRDCjBS3PFa7ENqyop0tKnd4QMOKMQ==
-
 brace-expansion@^1.1.7:
   version "1.1.11"
   resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-1.1.11.tgz#3c7fcbf529d87226f3d2f52b966ff5271eb441dd"

@@ -13,11 +13,11 @@ const globalStyle = css`
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Controller />,
+    element: <Display />,
   },
   {
-    path: "/display",
-    element: <Display />,
+    path: "/controller",
+    element: <Controller />,
   },
 ]);
 

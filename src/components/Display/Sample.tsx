@@ -4,10 +4,11 @@ import Drawer from "../Drawer";
 import { Typo } from "../../lib/typo";
 
 const Wrapper = styled.div`
-  line-height: 1.2;
-  color: #777;
-  font-size: 140px;
+  opacity: 0.7;
   margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 `;
 
 const Line = styled.div`
@@ -15,7 +16,6 @@ const Line = styled.div`
 `;
 
 const Item = styled.div`
-  width: 100px;
   transition: opacity 0.2s ease;
 
   &:hover {
@@ -23,29 +23,76 @@ const Item = styled.div`
   }
 `;
 
+const Item0 = styled(Item)`
+  width: 100px;
+  height: 120px;
+
+  @media (600px <= width < 800px) {
+    width: 80px;
+    height: ${80 * 1.2}px;
+  }
+  @media (width < 600px) {
+    width: 50px;
+    height: ${50 * 1.2}px;
+  }
+`;
+
+const Item1 = styled(Item)`
+  width: 140px;
+  height: ${140 * 1.2}px;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.6;
+  }
+
+  @media (600px <= width < 800px) {
+    width: 120px;
+    height: ${100 * 1.2}px;
+  }
+  @media (width < 600px) {
+    width: 70px;
+    height: ${70 * 1.2}px;
+  }
+`;
+
 interface SampleProps {
   typo: Typo;
-  color: string;
 }
 
-const Sample = ({ typo, color }: SampleProps) => {
+const Sample = ({ typo }: SampleProps) => {
+  const color = "#333";
+
   return (
     <Wrapper>
       <Line>
-        <Item>
+        <Item0>
           <Drawer char="か" typo={typo} color={color} />
-        </Item>
-        <Item>
+        </Item0>
+        <Item0>
           <Drawer char="ん" typo={typo} color={color} />
-        </Item>
-        <Item>
+        </Item0>
+        <Item0>
           <Drawer char="ど" typo={typo} color={color} />
-        </Item>
-        <Item>
+        </Item0>
+        <Item0>
           <Drawer char="う" typo={typo} color={color} />
-        </Item>
+        </Item0>
       </Line>
-      きょうえん
+      <Line>
+        <Item1>
+          <Drawer char="か" typo={typo} color={color} />
+        </Item1>
+        <Item1>
+          <Drawer char="ん" typo={typo} color={color} />
+        </Item1>
+        <Item1>
+          <Drawer char="ど" typo={typo} color={color} />
+        </Item1>
+        <Item1>
+          <Drawer char="う" typo={typo} color={color} />
+        </Item1>
+      </Line>
     </Wrapper>
   );
 };

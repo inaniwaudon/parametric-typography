@@ -2,9 +2,13 @@ import styled from "@emotion/styled";
 
 import { commandsToPathD } from "../lib/figure";
 import { Typo, typoToCommands } from "../lib/typo";
+import { useMemo } from "react";
 
 const Svg = styled.svg`
-  width: 100%;
+  height: 100%;
+  flex-grow: 1;
+  flex-shrink: 0;
+  aspect-ratio: 1 / 1;
 `;
 
 interface DrawerProps {
@@ -14,7 +18,10 @@ interface DrawerProps {
 }
 
 const Drawer = ({ char, typo, color }: DrawerProps) => {
-  const dArray = commandsToPathD(typoToCommands(char, typo));
+  const dArray = useMemo(
+    () => commandsToPathD(typoToCommands(char, typo)),
+    [char, typo]
+  );
 
   return (
     <Svg viewBox="-0.1 -0.1 1.2 1.3">
