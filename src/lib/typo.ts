@@ -1,34 +1,19 @@
-import { aIntonations, aLineCommands, aLineCommands1 } from "../commands/a";
-import {
-  doIntonations,
-  doLineCommands0,
-  doLineCommands1,
-} from "../commands/do";
-import {
-  kaIntonations,
-  kaLineCommands0,
-  kaLineCommands1,
-} from "../commands/ka";
-import { nIntonations, nLineCommands0, nLineCommands1 } from "../commands/n";
-import { uIntonations, uLineCommands0, uLineCommands1 } from "../commands/u";
-import { interpolate, strokeToPath } from "./figure";
+import aCommands from "../commands/a.json";
+import doCommands from "../commands/do.json";
+import kaCommands from "../commands/ka.json";
+import nCommands from "../commands/n.json";
+import uCommands from "../commands/u.json";
+import { InputCommand, interpolate, strokeToPath } from "./figure";
+import { intonations } from "./intonation";
 
 export type Char = "あ" | "か" | "ん" | "ど" | "う";
 
 const lineCommands = {
-  あ: [aLineCommands, aLineCommands1],
-  か: [kaLineCommands0, kaLineCommands1],
-  ん: [nLineCommands0, nLineCommands1],
-  ど: [doLineCommands0, doLineCommands1],
-  う: [uLineCommands0, uLineCommands1],
-};
-
-const intonations = {
-  あ: aIntonations,
-  か: kaIntonations,
-  ん: nIntonations,
-  ど: doIntonations,
-  う: uIntonations,
+  あ: aCommands as InputCommand[][][],
+  か: kaCommands as InputCommand[][][],
+  ん: nCommands as InputCommand[][][],
+  ど: doCommands as InputCommand[][][],
+  う: uCommands as InputCommand[][][],
 };
 
 export interface Typo {

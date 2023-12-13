@@ -1,4 +1,5 @@
 import fs from "fs";
+import { InputCommand } from "./src/lib/figure";
 
 type TempCommand =
   | {
@@ -22,6 +23,28 @@ type TempCommand =
       x: number;
       y: number;
     };
+
+interface MinMax {
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+}
+
+const calculateMinMax = (...minMaxes: MinMax[]): MinMax => {
+  let minX = Number.MAX_SAFE_INTEGER;
+  let minY = Number.MAX_SAFE_INTEGER;
+  let maxX = 0;
+  let maxY = 0;
+
+  for (const minMax of minMaxes) {
+    minX = Math.min(minX, minMax.minX);
+    minY = Math.min(minY, minMax.minY);
+    maxX = Math.max(maxX, minMax.maxX);
+    maxY = Math.max(maxY, minMax.maxY);
+  }
+  return { minX, minY, maxX, maxY };
+};
 
 const parseValues = (input: string) => {
   const result: number[] = [];
@@ -54,11 +77,12 @@ const parseValues = (input: string) => {
   return result;
 };
 
-export const convert = (txt: string) => {
+const convert = (txt: string) => {
   const file = fs.readFileSync(txt, "utf8");
   const lines = file.split("\n");
   const tempCommands: TempCommand[][] = [];
 
+  // パース
   for (const line of lines) {
     const commands: TempCommand[] = [];
 
@@ -150,6 +174,7 @@ export const convert = (txt: string) => {
   for (const commands of tempCommands) {
     for (const command of commands) {
       const before = commands[commands.indexOf(command) - 1];
+      // s を変換
       if (
         command.command === "s" &&
         (before.command === "c" || before.command === "C")
@@ -158,18 +183,21 @@ export const convert = (txt: string) => {
         (command as any).x1 = before.x + (before.x - before.x2);
         (command as any).y1 = before.y + (before.y - before.y2);
       }
+      command.command = command.command.toUpperCase() as "M" | "C";
     }
   }
+  return tempCommands as InputCommand[][];
+};
 
-  // 正規化
+const getMinMax = (inputCommands: InputCommand[][]): MinMax => {
   let minX = Number.MAX_SAFE_INTEGER;
   let minY = Number.MAX_SAFE_INTEGER;
   let maxX = 0;
   let maxY = 0;
 
-  for (const commands of tempCommands) {
+  for (const commands of inputCommands) {
     for (const command of commands) {
-      if (command.command === "c" || command.command === "C") {
+      if (command.command === "C") {
         minX = Math.min(minX, command.x, command.x1, command.x2);
         minY = Math.min(minY, command.y, command.y1, command.y2);
         maxX = Math.max(maxX, command.x, command.x1, command.x2);
@@ -182,14 +210,20 @@ export const convert = (txt: string) => {
       }
     }
   }
+  return { minX, minY, maxX, maxY };
+};
 
-  const normalizeX = (x: number) => (x - minX) / (maxX - minX);
-  const normalizeY = (y: number) => (y - minY) / (maxY - minY);
+// 正規化
+const normalize = (inputCommands: InputCommand[][], minMax: MinMax) => {
+  const width = minMax.maxX - minMax.minX;
+  const height = minMax.maxY - minMax.minY;
+  const size = Math.max(width, height);
 
-  for (const commands of tempCommands) {
+  const normalizeX = (x: number) => x / size;
+  const normalizeY = (y: number) => y / size;
+
+  for (const commands of inputCommands) {
     for (const command of commands) {
-      command.command = command.command.toUpperCase() as "M" | "C";
-
       command.x = normalizeX(command.x);
       command.y = normalizeY(command.y);
       if (command.command === "C") {
@@ -200,8 +234,47 @@ export const convert = (txt: string) => {
       }
     }
   }
-
-  console.log(tempCommands);
+  return inputCommands;
 };
 
-convert(process.argv[2]);
+// 中央揃え
+const centerlize = (inputCommands: InputCommand[][]) => {
+  const minMax = getMinMax(inputCommands);
+  const width = minMax.maxX - minMax.minX;
+  const height = minMax.maxY - minMax.minY;
+  const left = (1.0 - width) / 2;
+  const top = (1.0 - height) / 2;
+
+  for (const commands of inputCommands) {
+    for (const command of commands) {
+      command.x += left;
+      command.y += top;
+      if (command.command === "C") {
+        command.x1 += left;
+        command.y1 += top;
+        command.x2 += left;
+        command.y2 += top;
+      }
+    }
+  }
+  return inputCommands;
+};
+
+const chars = ["a", "ka", "n", "do", "u"];
+for (const char of chars) {
+  const converted = [
+    convert(`font/${char}0.svg`),
+    convert(`font/${char}1.svg`),
+  ];
+  const minMax0 = getMinMax(converted[0]);
+  const minMax1 = getMinMax(converted[1]);
+  const minMax = calculateMinMax(minMax0, minMax1);
+  const normaized = [
+    normalize(converted[0], minMax),
+    normalize(converted[1], minMax),
+  ];
+  const centerlized = [centerlize(normaized[0]), centerlize(normaized[1])];
+  const json = JSON.stringify(centerlized);
+
+  fs.writeFileSync(`src/commands/${char}.json`, json);
+}

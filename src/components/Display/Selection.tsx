@@ -77,7 +77,8 @@ const Selection = ({
 
   useEffect(() => {
     const listener = (e: MouseEvent) => {
-      if (!(e.target as any).closest("#selection")) {
+      const target = e.target as HTMLElement;
+      if (!target.closest("#selection, #abstract")) {
         setSelectedTypo(null);
       }
     };

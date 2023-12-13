@@ -50,6 +50,10 @@ const LinkText = styled.div`
   align-items: center;
 `;
 
+const Text = styled.div`
+  width: ${140 * 5 + 10}px;
+`;
+
 const Time = styled.time`
   letter-spacing: 2px;
   display: block;
@@ -108,7 +112,7 @@ const Display = () => {
         setSelectedTypo={setSelectedTypo}
       />
       {selectedTypo && (
-        <div>
+        <Text id="abstract">
           <Time>
             <Sample typo={typos[selectedTypo]} color={sampleColor} />
             {displayDateTime(new Date(typos[selectedTypo].created_at))}
@@ -119,7 +123,7 @@ const Display = () => {
               <div>Download this font</div>
             </LinkText>
           </Link>
-        </div>
+        </Text>
       )}
     </Wrapper>
   );
