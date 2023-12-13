@@ -1,9 +1,9 @@
-import styled from "@emotion/styled";
-import { useMemo } from "react";
-
-import { Typo } from "../../lib/typo";
-import Drawer from "../Drawer";
 import { keyframes } from "@emotion/react";
+import styled from "@emotion/styled";
+import { useEffect, useMemo } from "react";
+
+import { FirebaseTypo } from "../../Display";
+import SelectionItem from "./SelectionItem";
 
 const Wrapper = styled.div`
   height: 110vh;
@@ -40,26 +40,13 @@ const Content = styled.div`
   animation: ${marquee} 10s linear infinite;
 `;
 
-const Item = styled.div<{ selected: boolean }>`
-  width: 64px;
-  height: 64px;
-  cursor: pointer;
-  flex: 0;
-  filter: ${({ selected }) => (selected ? "blur(4px)" : "none")};
-  transition: transform 0.2s ease, filter 0.2s ease;
-
-  &:hover {
-    transform: scale(1.2);
-  }
-`;
-
 const COLUMN_COUNT = 3;
 const ROW_COUNT = 8;
 
 interface SelectionProps {
-  typos: Record<string, Typo>;
+  typos: Record<string, FirebaseTypo>;
   selectedTypo: string | null;
-  setSelectedTypo: (value: string) => void;
+  setSelectedTypo: (value: string | null) => void;
 }
 
 const Selection = ({
@@ -67,7 +54,6 @@ const Selection = ({
   selectedTypo,
   setSelectedTypo,
 }: SelectionProps) => {
-  const baseHue = 260;
   const totalCount = ROW_COUNT * COLUMN_COUNT;
 
   const typoLines = useMemo(() => {
@@ -89,22 +75,30 @@ const Selection = ({
       });
   }, [typos, totalCount]);
 
+  useEffect(() => {
+    const listener = (e: MouseEvent) => {
+      if (!(e.target as any).closest("#selection")) {
+        setSelectedTypo(null);
+      }
+    };
+    document.addEventListener("click", listener);
+    return () => document.removeEventListener("click", listener);
+  }, [setSelectedTypo]);
+
   return (
-    <Wrapper>
+    <Wrapper id="selection">
       {typoLines.map((line, lineI) => (
         <Line key={lineI}>
           <Content>
             {line.map(([id, typo], itemI) => {
-              const hue = baseHue + (Math.random() - 0.5) * 100;
-              const color = `hsl(${hue}deg, 80%, 60%)`;
               return (
-                <Item
-                  selected={id === selectedTypo}
-                  onClick={() => setSelectedTypo(id)}
-                  key={itemI}
-                >
-                  <Drawer char="あ" typo={typo} color={color} />
-                </Item>
+                <SelectionItem
+                  typo={typo}
+                  id={id}
+                  selectedTypo={selectedTypo}
+                  setSelectedTypo={setSelectedTypo}
+                  key={id + itemI}
+                />
               );
             })}
           </Content>

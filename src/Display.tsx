@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { onValue, ref } from "firebase/database";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { IoMdDownload } from "react-icons/io";
 import { MdSmartphone } from "react-icons/md";
 
@@ -55,13 +55,16 @@ const Time = styled.time`
   display: block;
 `;
 
-type FirebaseTypo = {
+export type FirebaseTypo = {
   created_at: string;
+  new: boolean;
 } & Typo;
 
 const Display = () => {
   const [typos, setTypos] = useState<Record<string, FirebaseTypo>>({});
   const [selectedTypo, setSelectedTypo] = useState<string | null>(null);
+  const typosRef = useRef<Record<string, FirebaseTypo>>({});
+  typosRef.current = typos;
 
   const sampleColor = "#666";
 
@@ -73,12 +76,17 @@ const Display = () => {
 
   useEffect(() => {
     // 新たなデータが追加された際の処理
-    const typosRef = ref(db, "typos/");
+    const dbTyposRef = ref(db, "typos/");
 
-    onValue(typosRef, (snapshot) => {
+    onValue(dbTyposRef, (snapshot) => {
+      const dict = snapshot.val() as Record<string, FirebaseTypo>;
+      const isFirst = Object.values(typosRef.current).length === 0;
+      for (const item in dict) {
+        dict[item].new = !typosRef.current[item] && !isFirst;
+      }
       setTypos((typos) => ({
         ...typos,
-        ...(snapshot.val() as Record<string, FirebaseTypo>),
+        ...dict,
       }));
     });
   }, []);
@@ -90,7 +98,7 @@ const Display = () => {
         <Link href="/">
           <LinkText>
             <MdSmartphone />
-            Make your typography
+            Make your typeface
           </LinkText>
         </Link>
       </Navigation>
