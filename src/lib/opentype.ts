@@ -1,4 +1,5 @@
 import { Font, Glyph, Path } from "opentype.js";
+
 import { OutputCommand, moveCommands, scaleCommands } from "./figure";
 import { Char, Typo, typoToCommands } from "./typo";
 
@@ -20,7 +21,6 @@ const commandsToPath = (commands: OutputCommand[][]) => {
       path.close();
     }
   }
-  console.log(path.commands);
   return path;
 };
 

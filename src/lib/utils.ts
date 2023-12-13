@@ -25,3 +25,13 @@ export const calculateMovingAverage = (
 
 export const withinRange = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
+
+export const displayDateTime = (date: Date) => {
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const hours = `0${date.getHours()}`.slice(-2);
+  const minutes = `0${date.getMinutes()}`.slice(-2);
+  const seconds = `0${date.getSeconds()}`.slice(-2);
+  return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
+};

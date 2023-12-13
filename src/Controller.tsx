@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import { useCallback, useState } from "react";
 
 import Drawer from "./components/Drawer";
-import Navigation from "./components/Navigation";
+import Navigation from "./components/Controller/Navigation";
 import { useRatio } from "./lib/useRatio";
 
 const Wrapper = styled.div`
@@ -41,7 +41,7 @@ const Overlay = styled.div<{ displays: boolean }>`
   z-index: 1;
 `;
 
-const Operator = () => {
+const Controller = () => {
   const [starts, setStarts] = useState(false);
   const [distance, setDistance] = useState(0);
 
@@ -124,4 +124,4 @@ const Operator = () => {
   );
 };
 
-export default Operator;
+export default Controller;

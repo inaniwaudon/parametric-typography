@@ -1,9 +1,9 @@
+import { ref, set } from "firebase/database";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { v4 as uuidV4 } from "uuid";
 
-import { Point3D, calculateMovingAverage, withinRange } from "./utils";
 import { db } from "./firebase";
-import { ref, set } from "firebase/database";
+import { Point3D, calculateMovingAverage, withinRange } from "./utils";
 
 const WINDOW_SIZE = 10;
 

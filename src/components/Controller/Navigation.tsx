@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
-import { Point3D } from "../lib/utils";
+
+import { Point3D } from "../../lib/utils";
 
 const Wrapper = styled.div`
   display: flex;

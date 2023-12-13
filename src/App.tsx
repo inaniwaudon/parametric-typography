@@ -2,7 +2,7 @@ import { css, Global } from "@emotion/react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import Display from "./Display";
-import Operator from "./Operator";
+import Controller from "./Controller";
 
 const globalStyle = css`
   body {
@@ -13,7 +13,7 @@ const globalStyle = css`
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Operator />,
+    element: <Controller />,
   },
   {
     path: "/display",
