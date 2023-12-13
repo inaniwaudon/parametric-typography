@@ -179,7 +179,6 @@ export const strokeToPath = (
   widths: number[],
   ratio: number
 ): OutputCommand[] => {
-  console.log("!");
   const arcs = commandsToArcs(commands);
   const outsideArcs: Arc[] = [];
   const insideArcs: Arc[] = [];

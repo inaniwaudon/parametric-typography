@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 
 import Drawer from "../Drawer";
-import { Typo } from "../../lib/typo";
+import { Char, Typo } from "../../lib/typo";
 
 const Wrapper = styled.div`
   opacity: 0.7;
@@ -62,36 +62,24 @@ interface SampleProps {
 
 const Sample = ({ typo }: SampleProps) => {
   const color = "#333";
+  const line0: Char[] = ["か", "ん", "ど", "う"];
+  const line1: Char[] = ["う", "ん"];
 
   return (
     <Wrapper>
       <Line>
-        <Item0>
-          <Drawer char="か" typo={typo} color={color} />
-        </Item0>
-        <Item0>
-          <Drawer char="ん" typo={typo} color={color} />
-        </Item0>
-        <Item0>
-          <Drawer char="ど" typo={typo} color={color} />
-        </Item0>
-        <Item0>
-          <Drawer char="う" typo={typo} color={color} />
-        </Item0>
+        {line0.map((char, i) => (
+          <Item0 key={i}>
+            <Drawer char={char} typo={typo} color={color} />
+          </Item0>
+        ))}
       </Line>
       <Line>
-        <Item1>
-          <Drawer char="か" typo={typo} color={color} />
-        </Item1>
-        <Item1>
-          <Drawer char="ん" typo={typo} color={color} />
-        </Item1>
-        <Item1>
-          <Drawer char="ど" typo={typo} color={color} />
-        </Item1>
-        <Item1>
-          <Drawer char="う" typo={typo} color={color} />
-        </Item1>
+        {line1.map((char, i) => (
+          <Item1 key={i}>
+            <Drawer char={char} typo={typo} color={color} />
+          </Item1>
+        ))}
       </Line>
     </Wrapper>
   );

@@ -110,8 +110,8 @@ const Display = () => {
     onValue(dbTyposRef, (snapshot) => {
       const dict = snapshot.val() as Record<string, FirebaseTypo>;
       const isFirst = Object.values(typosRef.current).length === 0;
-      for (const item in dict) {
-        dict[item].new = !typosRef.current[item] && !isFirst;
+      for (const id in dict) {
+        dict[id].new = !typosRef.current[id] && !isFirst;
       }
       setTypos((typos) => ({
         ...typos,
