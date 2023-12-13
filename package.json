@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "convert": "yarn node --loader ts-node/esm convert.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",

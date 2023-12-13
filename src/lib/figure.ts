@@ -186,7 +186,7 @@ export const strokeToPath = (
     const arc = arcs[i];
     if (arcs.length + 1 !== widths.length) {
       throw new Error(
-        `The length is different. ${arcs.length} ${widths.length}`
+        `The length is different. ${arcs.length + 1} ${widths.length}`
       );
     }
 

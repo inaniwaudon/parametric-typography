@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 
 import { commandsToPathD } from "../lib/figure";
-import { Typo, typoToCommands } from "../lib/typo";
+import { Char, Typo, typoToCommands } from "../lib/typo";
 import { useMemo } from "react";
 
 const Svg = styled.svg`
@@ -12,7 +12,7 @@ const Svg = styled.svg`
 `;
 
 interface DrawerProps {
-  char: "あ" | "か" | "ん" | "ど" | "う";
+  char: Char;
   typo: Typo;
   color: string;
 }

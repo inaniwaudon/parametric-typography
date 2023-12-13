@@ -1,6 +1,6 @@
 # parametric-typography
 
-筑波大学の授業「[ディジタルコンテンツ表現演習](https://digicon.mast.tsukuba.ac.jp/)」の課題として制作した Web サイトです。
+筑波大学の授業「[ディジタルコンテンツ表現演習](https://digicon.mast.tsukuba.ac.jp/)」の課題として制作した Web サイトです。  
 お手持ちのスマートフォンを操作して、パラメトリックなタイポグラフィを体感することができます。
 
 デモ：https://parametric.yokohama.dev/
@@ -39,6 +39,6 @@ yarn run dev
 3. `/font/**.svg` に保存し、以下のコマンドを実行します。
 
 ```bash
-yarn node --loader ts-node/esm convert.ts
+yarn run convert
 ```
 4. `/src/lib/intonation.ts` を編集し、文字に抑揚を与えます。

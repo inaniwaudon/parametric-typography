@@ -25,7 +25,7 @@ const commandsToPath = (commands: OutputCommand[][]) => {
 };
 
 export const makeFont = (typo: Typo) => {
-  const chars: Char[] = ["あ", "か", "ん", "ど", "う"];
+  const chars: Char[] = ["あ", "か", "ん", "ど", "う", "き", "よ", "え"];
   const glyphs: Glyph[] = chars.map(
     (char) =>
       new Glyph({

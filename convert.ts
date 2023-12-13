@@ -90,7 +90,7 @@ const convert = (txt: string) => {
       const command = line[i];
 
       const after = line.substring(i + 1);
-      const toResult = after.search(/[MmSsCc]/);
+      const toResult = after.search(/[MmsCc]/);
       const to = toResult > -1 ? toResult : after.length;
       const value = after.substring(0, to);
       const values = parseValues(value);
@@ -103,13 +103,15 @@ const convert = (txt: string) => {
         });
       }
       if (command === "s") {
-        commands.push({
-          command: "s",
-          x2: values[0],
-          y2: values[1],
-          x: values[2],
-          y: values[3],
-        });
+        for (let i = 0; i < values.length / 4; i++) {
+          commands.push({
+            command: "s",
+            x2: values[i * 4 + 0],
+            y2: values[i * 4 + 1],
+            x: values[i * 4 + 2],
+            y: values[i * 4 + 3],
+          });
+        }
       }
       if (command === "c" || command === "C") {
         for (let i = 0; i < values.length / 6; i++) {
@@ -260,7 +262,7 @@ const centerlize = (inputCommands: InputCommand[][]) => {
   return inputCommands;
 };
 
-const chars = ["a", "ka", "n", "do", "u"];
+const chars = ["a", "ka", "n", "do", "u", "ki", "yo", "e"];
 for (const char of chars) {
   const converted = [
     convert(`font/${char}0.svg`),
@@ -276,5 +278,5 @@ for (const char of chars) {
   const centerlized = [centerlize(normaized[0]), centerlize(normaized[1])];
   const json = JSON.stringify(centerlized);
 
-  fs.writeFileSync(`src/commands/${char}.json`, json);
+  fs.writeFileSync(`src/const/commands/${char}.json`, json);
 }

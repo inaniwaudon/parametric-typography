@@ -63,7 +63,7 @@ interface SampleProps {
 const Sample = ({ typo }: SampleProps) => {
   const color = "#333";
   const line0: Char[] = ["か", "ん", "ど", "う"];
-  const line1: Char[] = ["う", "ん"];
+  const line1: Char[] = ["き", "よ", "う", "え", "ん"];
 
   return (
     <Wrapper>
@@ -74,7 +74,7 @@ const Sample = ({ typo }: SampleProps) => {
           </Item0>
         ))}
       </Line>
-      <Line>
+      <Line style={{ marginLeft: "-28px" }}>
         {line1.map((char, i) => (
           <Item1 key={i}>
             <Drawer char={char} typo={typo} color={color} />
