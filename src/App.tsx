@@ -1,6 +1,14 @@
+import { css, Global } from "@emotion/react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Operator from "./Operator";
+
 import Display from "./Display";
+import Operator from "./Operator";
+
+const globalStyle = css`
+  body {
+    margin: 0;
+  }
+`;
 
 const router = createBrowserRouter([
   {
@@ -14,7 +22,12 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <Global styles={globalStyle} />
+      <RouterProvider router={router} />
+    </>
+  );
 };
 
 export default App;

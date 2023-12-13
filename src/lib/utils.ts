@@ -4,6 +4,12 @@ export interface Point3D {
   z: number;
 }
 
+export interface Typo {
+  ratio0: number;
+  ratio1: number;
+  ratio2: number;
+}
+
 const sum = (array: number[]) => array.reduce((prev, value) => prev + value, 0);
 
 // 移動平均を算出

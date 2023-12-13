@@ -1,6 +1,6 @@
-import { InputCommand } from "./figure";
+import { InputCommand } from "../lib/figure";
 
-export const lineCommands: InputCommand[][] = [
+export const aLineCommands: InputCommand[][] = [
   [
     { command: "M", x: 0.036923076923076954, y: 0.1776928953399542 },
     {
@@ -120,7 +120,7 @@ export const lineCommands: InputCommand[][] = [
   ],
 ];
 
-export const lineCommands2: InputCommand[][] = [
+export const aLineCommands1: InputCommand[][] = [
   [
     { command: "M", x: 0.0530489954176948, y: 0.16486446452377426 },
     {
@@ -240,7 +240,7 @@ export const lineCommands2: InputCommand[][] = [
   ],
 ];
 
-export const intonations = [
+export const aIntonations = [
   [0.1, 0.5, 1],
   [0.1, 1, 0.5, 1],
   [0.5, 0.3, 0.5, 0.3, 0.5, 0.5, 0.3, 0.1],

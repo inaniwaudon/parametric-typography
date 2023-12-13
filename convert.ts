@@ -7,6 +7,13 @@ type TempCommand =
       y: number;
     }
   | {
+      command: "s";
+      x2: number;
+      y2: number;
+      x: number;
+      y: number;
+    }
+  | {
       command: "c" | "C";
       x1: number;
       y1: number;
@@ -59,7 +66,7 @@ export const convert = (txt: string) => {
       const command = line[i];
 
       const after = line.substring(i + 1);
-      const toResult = after.search(/[MmCc]/);
+      const toResult = after.search(/[MmSsCc]/);
       const to = toResult > -1 ? toResult : after.length;
       const value = after.substring(0, to);
       const values = parseValues(value);
@@ -69,6 +76,15 @@ export const convert = (txt: string) => {
           command,
           x: values[0],
           y: values[1],
+        });
+      }
+      if (command === "s") {
+        commands.push({
+          command: "s",
+          x2: values[0],
+          y2: values[1],
+          x: values[2],
+          y: values[3],
         });
       }
       if (command === "c" || command === "C") {
@@ -127,6 +143,20 @@ export const convert = (txt: string) => {
       }
       if ("y" in command) {
         beforeY = command.y;
+      }
+    }
+  }
+
+  for (const commands of tempCommands) {
+    for (const command of commands) {
+      const before = commands[commands.indexOf(command) - 1];
+      if (
+        command.command === "s" &&
+        (before.command === "c" || before.command === "C")
+      ) {
+        (command as any).command = "C";
+        (command as any).x1 = before.x + (before.x - before.x2);
+        (command as any).y1 = before.y + (before.y - before.y2);
       }
     }
   }

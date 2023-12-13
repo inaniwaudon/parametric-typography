@@ -1,6 +1,9 @@
 import { useCallback, useMemo, useRef, useState } from "react";
+import { v4 as uuidV4 } from "uuid";
+
 import { Point3D, calculateMovingAverage, withinRange } from "./utils";
-import { postTypography } from "./firebase";
+import { db } from "./firebase";
+import { ref, set } from "firebase/database";
 
 const WINDOW_SIZE = 10;
 
@@ -9,6 +12,7 @@ export const useRatio = (
 ) => {
   const [supportsMotion, setSupportsMotion] = useState(false);
   const [state, setState] = useState<"move" | "stop" | "submitted">("move");
+  const [uuid] = useState(uuidV4());
 
   // センサ類
   const [calculated, setCalculated] = useState<Point3D[]>([]);
@@ -44,13 +48,14 @@ export const useRatio = (
 
   const submit = useCallback(async () => {
     if (ratioRef.current) {
-      await postTypography(
-        ratioRef.current.x,
-        ratioRef.current.y,
-        ratioRef.current.z
-      );
+      await set(ref(db, `typos/${uuid}`), {
+        ratio0: ratioRef.current.x,
+        ratio1: ratioRef.current.y,
+        ratio2: ratioRef.current.z,
+        created_at: new Date().toISOString(),
+      });
     }
-  }, [ratioRef]);
+  }, [uuid, ratioRef]);
 
   const onDeviceMotion = useCallback(
     async (e: DeviceMotionEvent) => {

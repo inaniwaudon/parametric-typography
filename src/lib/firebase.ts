@@ -1,6 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set } from "firebase/database";
-import { v4 as uuidV4 } from "uuid";
+import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB5sjJUxBkr6MEP9z_fFELh3uTlEFDvDKc",
@@ -14,18 +13,5 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
 
-export const postTypography = async (
-  ratio0: number,
-  ratio1: number,
-  ratio2: number
-) => {
-  const id = uuidV4();
-  await set(ref(db, `typos/${id}`), {
-    ratio0,
-    ratio1,
-    ratio2,
-    created_at: new Date().toISOString(),
-  });
-};
+export const db = getDatabase(app);

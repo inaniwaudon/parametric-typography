@@ -77,7 +77,9 @@ export const interpolate = (
 ) => {
   const newCommand: InputCommand[] = [];
   if (commands0.length !== commands1.length) {
-    throw new Error("Length is different.");
+    throw new Error(
+      `Length is different. ${commands0.length} ${commands1.length}`
+    );
   }
   for (let i = 0; i < commands0.length; i++) {
     if (commands0[i].command != commands1[i].command) {
@@ -310,8 +312,8 @@ export const strokeToPath = (
       );
     }
 
-    const fromRatio = widths[i] * ratio + (1 - ratio);
-    const toRatio = widths[i + 1] * ratio + (1 - ratio);
+    const fromRatio = 1; //widths[i] * ratio + (1 - ratio);
+    const toRatio = 1; //widths[i + 1] * ratio + (1 - ratio);
     outsideArcs.push(
       getParallelArc(
         arc,

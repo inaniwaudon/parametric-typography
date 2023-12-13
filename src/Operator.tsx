@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import { useCallback, useState } from "react";
+
 import Drawer from "./components/Drawer";
 import Navigation from "./components/Navigation";
 import { useRatio } from "./lib/useRatio";
@@ -89,11 +90,17 @@ const Operator = () => {
     stop(false);
   };
 
+  const typo = {
+    ratio0: ratio.x,
+    ratio1: ratio.y,
+    ratio2: ratio.z,
+  };
+
   return (
     <>
       <Wrapper onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         <DrawerWrapper ratio={distance}>
-          <Drawer ratio0={ratio.x} ratio1={ratio.y} ratio2={ratio.z} />
+          <Drawer char="あ" typo={typo} hue={ratio.z * 360} />
         </DrawerWrapper>
         {!supportsMotion && (
           <Navigation
