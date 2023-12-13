@@ -4,15 +4,9 @@ export interface Point3D {
   z: number;
 }
 
-export interface Typo {
-  ratio0: number;
-  ratio1: number;
-  ratio2: number;
-}
-
 const sum = (array: number[]) => array.reduce((prev, value) => prev + value, 0);
 
-// 移動平均を算出
+// 移動平均を算出する
 export const calculateMovingAverage = (
   array: Point3D[],
   newValue: Point3D,

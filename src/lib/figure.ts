@@ -10,7 +10,7 @@ interface Arc {
   p3: Point;
 }
 
-export interface Curve {
+export interface CurveTo {
   command: "C";
   x1: number;
   y1: number;
@@ -20,22 +20,21 @@ export interface Curve {
   y: number;
 }
 
-export type InputCommand =
-  | {
-      command: "M";
-      x: number;
-      y: number;
-    }
-  | Curve;
+interface MoveTo {
+  command: "M";
+  x: number;
+  y: number;
+}
 
-export type OutputCommand =
-  | InputCommand
-  | {
-      command: "L";
-      x: number;
-      y: number;
-    }
-  | { command: "Z" };
+interface LineTo {
+  command: "L";
+  x: number;
+  y: number;
+}
+
+export type InputCommand = MoveTo | CurveTo;
+
+export type OutputCommand = InputCommand | LineTo | { command: "Z" };
 
 type Line =
   | {
@@ -312,8 +311,8 @@ export const strokeToPath = (
       );
     }
 
-    const fromRatio = 1; //widths[i] * ratio + (1 - ratio);
-    const toRatio = 1; //widths[i + 1] * ratio + (1 - ratio);
+    const fromRatio = widths[i] * ratio + (1 - ratio);
+    const toRatio = widths[i + 1] * ratio + (1 - ratio);
     outsideArcs.push(
       getParallelArc(
         arc,
@@ -371,3 +370,91 @@ export const strokeToPath = (
   newCommands.push({ command: "Z" });
   return newCommands;
 };
+
+const scaleCommand = (c: OutputCommand, scale: number): OutputCommand => {
+  if (c.command === "M" || c.command === "L") {
+    return {
+      command: c.command,
+      x: c.x * scale,
+      y: c.y * scale,
+    };
+  }
+  if (c.command === "C") {
+    return {
+      command: "C",
+      x1: c.x1 * scale,
+      y1: c.y1 * scale,
+      x2: c.x2 * scale,
+      y2: c.y2 * scale,
+      x: c.x * scale,
+      y: c.y * scale,
+    };
+  } else {
+    return c;
+  }
+};
+
+const moveCommand = (c: OutputCommand, delta: Point): OutputCommand => {
+  if (c.command === "M" || c.command === "L") {
+    return {
+      command: c.command,
+      x: c.x + delta.x,
+      y: c.y + delta.y,
+    };
+  }
+  if (c.command === "C") {
+    return {
+      command: "C",
+      x1: c.x1 + delta.x,
+      y1: c.y1 + delta.y,
+      x2: c.x2 + delta.x,
+      y2: c.y2 + delta.y,
+      x: c.x + delta.x,
+      y: c.y + delta.y,
+    };
+  } else {
+    return c;
+  }
+};
+
+const invertCommand = (c: OutputCommand, vertical: boolean): OutputCommand => {
+  const xRatio = vertical ? 1 : -1;
+  const yRatio = vertical ? -1 : 1;
+  if (c.command === "M" || c.command === "L") {
+    return {
+      command: c.command,
+      x: c.x * xRatio,
+      y: c.y * yRatio,
+    };
+  }
+  if (c.command === "C") {
+    return {
+      command: "C",
+      x1: c.x1 * xRatio,
+      y1: c.y1 * yRatio,
+      x2: c.x2 * xRatio,
+      y2: c.y2 * yRatio,
+      x: c.x * xRatio,
+      y: c.y * yRatio,
+    };
+  } else {
+    return c;
+  }
+};
+
+export const scaleCommands = (
+  outputCommands: OutputCommand[][],
+  scale: number
+) =>
+  outputCommands.map((commands) => commands.map((c) => scaleCommand(c, scale)));
+
+export const moveCommands = (outputCommands: OutputCommand[][], delta: Point) =>
+  outputCommands.map((commands) => commands.map((c) => moveCommand(c, delta)));
+
+export const invertCommands = (
+  outputCommands: OutputCommand[][],
+  vertical: boolean
+) =>
+  outputCommands.map((commands) =>
+    commands.map((c) => invertCommand(c, vertical))
+  );

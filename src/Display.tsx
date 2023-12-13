@@ -1,10 +1,11 @@
 import styled from "@emotion/styled";
 import { onValue, ref } from "firebase/database";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import Drawer from "./components/Drawer";
 import { db } from "./lib/firebase";
-import { Typo } from "./lib/utils";
+import { makeFont } from "./lib/opentype";
+import { Typo } from "./lib/typo";
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -94,18 +95,9 @@ const SampleItem = styled.div`
 const Display = () => {
   const [typos, setTypos] = useState<Record<string, Typo>>({});
   const [typo, setTypo] = useState<Typo>();
+
   const baseHue = 260;
-
-  useEffect(() => {
-    const typosRef = ref(db, "typos/");
-
-    onValue(typosRef, (snapshot) => {
-      setTypos((typos) => ({
-        ...typos,
-        ...(snapshot.val() as Record<string, Typo>),
-      }));
-    });
-  }, []);
+  const sampleColor = "#666";
 
   const filledTypos = useMemo(() => {
     const values = Object.values(typos);
@@ -117,6 +109,24 @@ const Display = () => {
       .slice(0, 24);
   }, [typos]);
 
+  const downloadFont = useCallback(() => {
+    if (typo) {
+      makeFont(typo);
+    }
+  }, [typo]);
+
+  useEffect(() => {
+    // 新たなデータが追加された際の処理
+    const typosRef = ref(db, "typos/");
+
+    onValue(typosRef, (snapshot) => {
+      setTypos((typos) => ({
+        ...typos,
+        ...(snapshot.val() as Record<string, Typo>),
+      }));
+    });
+  }, []);
+
   return (
     <Wrapper>
       <Navigation>
@@ -124,17 +134,21 @@ const Display = () => {
         <Link href="/">Make your typography</Link>
       </Navigation>
       <DrawerWrapper>
-        {[...Array(3)].map((_, i) => (
-          <DrawerLine>
-            {filledTypos.slice(8 * i, 8 * (i + 1)).map((typo) => (
-              <DrawerItem onClick={() => setTypo(typo)}>
-                <Drawer
-                  char="あ"
-                  typo={typo}
-                  hue={baseHue + (Math.random() - 0.5) * 100}
-                />
-              </DrawerItem>
-            ))}
+        {[...Array(3)].map((_, lineI) => (
+          <DrawerLine key={lineI}>
+            {filledTypos
+              .slice(8 * lineI, 8 * (lineI + 1))
+              .map((typo, itemI) => (
+                <DrawerItem key={itemI} onClick={() => setTypo(typo)}>
+                  <Drawer
+                    char="あ"
+                    typo={typo}
+                    color={`hsl(${
+                      baseHue + (Math.random() - 0.5) * 100
+                    }deg, 80%, 60%)`}
+                  />
+                </DrawerItem>
+              ))}
           </DrawerLine>
         ))}
       </DrawerWrapper>
@@ -143,32 +157,16 @@ const Display = () => {
           {typo && (
             <SampleLine>
               <SampleItem>
-                <Drawer
-                  char="か"
-                  typo={typo}
-                  hue={baseHue + (Math.random() - 0.5) * 100}
-                />
+                <Drawer char="か" typo={typo} color={sampleColor} />
               </SampleItem>
               <SampleItem>
-                <Drawer
-                  char="ん"
-                  typo={typo}
-                  hue={baseHue + (Math.random() - 0.5) * 100}
-                />
+                <Drawer char="ん" typo={typo} color={sampleColor} />
               </SampleItem>
               <SampleItem>
-                <Drawer
-                  char="ど"
-                  typo={typo}
-                  hue={baseHue + (Math.random() - 0.5) * 100}
-                />
+                <Drawer char="ど" typo={typo} color={sampleColor} />
               </SampleItem>
               <SampleItem>
-                <Drawer
-                  char="う"
-                  typo={typo}
-                  hue={baseHue + (Math.random() - 0.5) * 100}
-                />
+                <Drawer char="う" typo={typo} color={sampleColor} />
               </SampleItem>
             </SampleLine>
           )}
@@ -176,7 +174,9 @@ const Display = () => {
         </Sample>
         2023/12/14 0:55 / 0.93, 0.12, 0.45
         <br />
-        <Link href="">Download this font</Link>
+        <Link href="#" onClick={downloadFont}>
+          Download this font
+        </Link>
       </Text>
     </Wrapper>
   );

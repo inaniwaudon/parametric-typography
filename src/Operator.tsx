@@ -100,7 +100,11 @@ const Operator = () => {
     <>
       <Wrapper onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         <DrawerWrapper ratio={distance}>
-          <Drawer char="あ" typo={typo} hue={ratio.z * 360} />
+          <Drawer
+            char="あ"
+            typo={typo}
+            color={`hsl(${ratio.z * 360}deg, 80%, 60%)`}
+          />
         </DrawerWrapper>
         {!supportsMotion && (
           <Navigation

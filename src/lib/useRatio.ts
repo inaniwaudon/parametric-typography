@@ -28,8 +28,8 @@ export const useRatio = (
     () =>
       supportsMotion
         ? {
-            x: Math.round(((smoothed.x + 5) / 10) * 50) / 50,
-            y: Math.round(((smoothed.y + 5) / 10) * 50) / 50,
+            x: withinRange(Math.round(((smoothed.x + 5) / 10) * 50) / 50, 0, 1),
+            y: withinRange(Math.round(((smoothed.y + 5) / 10) * 50) / 50, 0, 1),
             z: withinRange(
               Math.round(((gammaOrientation + 80) / 160) * 50) / 50,
               0,
